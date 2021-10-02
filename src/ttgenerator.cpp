@@ -267,7 +267,7 @@ void TTSourceGenerator::MainStrokeAngle(short angle100, wchar_t error[]) {
 	this->italic = false;
 	
 	if (this->mainStrokeAngle) {
-		swprintf(error,L"cannot use MAINSTROKEANGLE more than once per glyph, or together with GLYPHSTROKEANGLE");
+		swprintf(error,100,L"cannot use MAINSTROKEANGLE more than once per glyph, or together with GLYPHSTROKEANGLE");
 	} else {
 		this->mainStrokeAngle = this->glyphStrokeAngle = true;
 		if (deg < 90.0 - strokeFudge || 90.0 + strokeFudge < deg) {
@@ -284,12 +284,12 @@ void TTSourceGenerator::GlyphStrokeAngle(short riseCvt, short runCvt, wchar_t er
 	double rad;
 
 	if (this->glyphStrokeAngle)
-		swprintf(error,L"cannot use GLYPHSTROKEANGLE more than once per glyph, or together with MAINSTROKEANGLE");
+		swprintf(error,100,L"cannot use GLYPHSTROKEANGLE more than once per glyph, or together with MAINSTROKEANGLE");
 	else {
 		this->font->TheCvt()->GetCvtValue(riseCvt,&riseCvtValue);
 		this->font->TheCvt()->GetCvtValue(runCvt, &runCvtValue);
-		if (!riseCvtValue) { swprintf(error,L"Cvt value of italic rise %hi cannot be 0",riseCvt); return; }
-		if (!runCvtValue) { swprintf(error,L"Cvt value of italic run %hi cannot be 0",runCvt); return; }
+		if (!riseCvtValue) { swprintf(error,100,L"Cvt value of italic rise %hi cannot be 0",riseCvt); return; }
+		if (!runCvtValue) { swprintf(error,100,L"Cvt value of italic run %hi cannot be 0",runCvt); return; }
 		this->riseCvt = riseCvt;
 		this->runCvt = runCvt;
 		rad = atan((double)riseCvtValue/(double)runCvtValue); deg = (short)Round(100*Deg(rad));
@@ -347,7 +347,7 @@ bool TTSourceGenerator::ItalicAngleAllowed(ProjFreeVector *projFreeVector, wchar
 	bool italic = xItalDir <= projFreeVector->pv.dir && projFreeVector->pv.dir <= yAdjItalDir;
 
 	if (italic && !this->italic) {
-		swprintf(error,L"cannot use / (italic angle) or // (adjusted italic angle) unless GLYPHSTROKEANGLE specifies an italic glyph");
+		swprintf(error,100,L"cannot use / (italic angle) or // (adjusted italic angle) unless GLYPHSTROKEANGLE specifies an italic glyph");
 		return false;
 	}
 	return true;
@@ -361,7 +361,7 @@ bool TTSourceGenerator::AlmostPerpendicular(const TTVectorDesc *pv, const TTVect
 
 	if (Abs(ScalProdRV(rpv,rfv)) >= 1.0/16.0) return false;
 
-	swprintf(error,L"cannot accept vector override (projection and freedom vectors are [almost] perpendicular)");
+	swprintf(error,100,L"cannot accept vector override (projection and freedom vectors are [almost] perpendicular)");
 	return true;
 } // TTSourceGenerator::AlmostPerpendicular
 
@@ -374,12 +374,12 @@ void TTSourceGenerator::SetRounding(bool y, Rounding round, short params, short 
 void TTSourceGenerator::SetItalicStroke(bool phase, wchar_t error[]) {
 	if (phase) {
 		if (this->setItalicStrokePhase)
-			swprintf(error,L"cannot use SETITALICSTROKEPHASE more than once per glyph");
+			swprintf(error,100,L"cannot use SETITALICSTROKEPHASE more than once per glyph");
 		else
 			this->setItalicStrokePhase = true;
 	} else {
 		if (this->setItalicStrokeAngle)
-			swprintf(error,L"cannot use SETITALICSTROKEANGLE more than once per glyph");
+			swprintf(error,100,L"cannot use SETITALICSTROKEANGLE more than once per glyph");
 		else
 			this->setItalicStrokeAngle = true;
 	}
@@ -407,9 +407,9 @@ void TTSourceGenerator::Anchor(bool y, ProjFreeVector *projFreeVector, short kno
 			/* nix */
 		}
 	} else if (y) {
-		swprintf(error,L"cannot YANCHOR the side-bearing points");
+		swprintf(error,100,L"cannot YANCHOR the side-bearing points");
 	} else {
-		swprintf(error,L"can XANCHOR the side-bearing points only to grid, down to grid, or up to grid");
+		swprintf(error,100,L"can XANCHOR the side-bearing points only to grid, down to grid, or up to grid");
 	}
 } /* TTSourceGenerator::Anchor */
 
@@ -429,16 +429,16 @@ void TTSourceGenerator::GrabHereInX(short left, short right, wchar_t error[]) {
 			leftCvt = this->TheCvt(-1,-1,linkGrey,linkX,cvtLsb,leftDistance);
 			rightCvt = this->TheCvt(-1,-1,linkWhite,linkX,cvtRsb,rightDistance);
 			if (leftCvt < 0 )
-				swprintf(error,L"cannot accept GRABHEREINX (no cvt found from %hi to %hi)",this->knots - 2,left);
+				swprintf(error,100,L"cannot accept GRABHEREINX (no cvt found from %hi to %hi)",this->knots - 2,left);
 			else if (rightCvt < 0)
-				swprintf(error,L"cannot accept GRABHEREINX (no cvt found from %hi to %hi)",right,this->knots - 1);
+				swprintf(error,100,L"cannot accept GRABHEREINX (no cvt found from %hi to %hi)",right,this->knots - 1);
 			else {
 				this->leftAnchor = left; this->rightAnchor = right;
 				this->tt->CALL24(leftCvt,rightCvt);
 			}
 		}
 	} else
-		swprintf(error,L"cannot accept GRABHEREINX (%hi is a side-bearing point)",left >= this->knots - PHANTOMPOINTS ? left : right);
+		swprintf(error,100,L"cannot accept GRABHEREINX (%hi is a side-bearing point)",left >= this->knots - PHANTOMPOINTS ? left : right);
 } /* TTSourceGenerator::GrabHereInX */
 
 short TTSourceGenerator::ProjectedDistance(bool signedDistance, short parent, short child, ProjFreeVector *projFreeVector) {
@@ -510,13 +510,13 @@ void TTSourceGenerator::Link(bool y, bool dist, ProjFreeVector *projFreeVector, 
 	} else { // check for links related to GrabHereInX, using predefined colors and cvt numbers
 		if (parent == this->leftAnchor && child == this->knots - 2 || parent == this->knots - 2 && child == this->leftAnchor) {
 			lsbLink = true; negativeMirp = parent == this->leftAnchor;
-			if (dist) swprintf(error,L"cannot use an XDIST command when a GRABHEREINX command has defined a cvt number");
-			if (cvt >= 0) swprintf(error,L"cannot override a cvt number defined via a GRABHEREINX command");
+			if (dist) swprintf(error,100,L"cannot use an XDIST command when a GRABHEREINX command has defined a cvt number");
+			if (cvt >= 0) swprintf(error,100,L"cannot override a cvt number defined via a GRABHEREINX command");
 			color = linkGrey; cvt = LSBTMP;
 		} else if (parent == this->rightAnchor && child == this->knots - 1 || parent == this->knots - 1 && child == this->rightAnchor) {
 			rsbLink = true; negativeMirp = parent == this->rightAnchor;
-			if (dist) swprintf(error,L"cannot use an XDIST command when a GRABHEREINX command has defined a cvt number");
-			if (cvt >= 0) swprintf(error,L"cannot override a cvt number defined via a GRABHEREINX command");
+			if (dist) swprintf(error,100,L"cannot use an XDIST command when a GRABHEREINX command has defined a cvt number");
+			if (cvt >= 0) swprintf(error,100,L"cannot override a cvt number defined via a GRABHEREINX command");
 			color = linkWhite; cvt = RSBTMP;
 		} else {
 			color = this->glyph->TheColor(parent,child);
@@ -653,9 +653,9 @@ bool ValidateInterpolee(bool y, short parent0, short child, short parent1, Vecto
 	dir = 'x' + (y & true);
 	if (low == mid || mid == high) {
 		parent = y ? (mid == V[parent0].y ? parent0 : parent1) : (mid == V[parent0].x ? parent0 : parent1);
-		swprintf(error,L"cannot %cInterpolate child point %hi (cannot be on same %c-coordinate as its parent point %hi)",Cap(dir),child,dir,parent);
+		swprintf(error,100,L"cannot %cInterpolate child point %hi (cannot be on same %c-coordinate as its parent point %hi)",Cap(dir),child,dir,parent);
 	} else {
-		swprintf(error,L"cannot %cInterpolate child point %hi (cannot be outside the range of %c-coordinates defined by its parent points %hi and %hi)",Cap(dir),child,dir,parent0,parent1);
+		swprintf(error,100,L"cannot %cInterpolate child point %hi (cannot be outside the range of %c-coordinates defined by its parent points %hi and %hi)",Cap(dir),child,dir,parent0,parent1);
 	}
 	return false;
 } // ValidateInterpolee
@@ -709,7 +709,7 @@ void TTSourceGenerator::EndCodePath(wchar_t error[]) {
 // The main reason for doing so is the absence of "get-reference-point" instructions: the functions implementing these commands tend to need the parents' (refernece points') original and/or current coordinates.
 void TTSourceGenerator::ResAnchor(bool y, ProjFreeVector *projFreeVector, short child, short cvt, wchar_t error[]) {
 	if (this->tt == NULL) return;
-	if (child >= this->knots - PHANTOMPOINTS) { swprintf(error,L"cannot Res%cAnchor the side-bearing points",y ? L'Y' : L'X'); return; }
+	if (child >= this->knots - PHANTOMPOINTS) { swprintf(error,100,L"cannot Res%cAnchor the side-bearing points",y ? L'Y' : L'X'); return; }
 	if (!this->ItalicAngleAllowed(projFreeVector,error)) return;
 	if (this->AlmostPerpendicular(&projFreeVector->pv,&projFreeVector->fv[0],error)) return;
 	this->AssertFreeProjVector(&projFreeVector->pv,&projFreeVector->fv[0]);
@@ -730,7 +730,7 @@ void TTSourceGenerator::ResLink(bool y, bool dist, ProjFreeVector *projFreeVecto
 	bool useMinDist;
 
 	if (this->tt == NULL) return;
-//	if (parent >= this->knots - PHANTOMPOINTS && child >= this->knots - PHANTOMPOINTS) { swprintf(error,L"cannot Res%cLink the advance width",y ? 'Y' : 'X'); return; }
+//	if (parent >= this->knots - PHANTOMPOINTS && child >= this->knots - PHANTOMPOINTS) { swprintf(error,100,L"cannot Res%cLink the advance width",y ? 'Y' : 'X'); return; }
 	if (!this->ItalicAngleAllowed(projFreeVector,error)) return;
 	if (this->AlmostPerpendicular(&projFreeVector->pv,&projFreeVector->fv[0],error)) return;
 	
@@ -870,7 +870,7 @@ void TTSourceGenerator::Align(FVOverride fvOverride, short parent0, short childr
 	if (this->tt) {
 		switch (fvOverride) {
 		case fvOldMethod: // Align
-			swprintf(buf,L"/* Align [%hi...%hi] */",parent0,parent1); this->tt->Emit(buf);
+			swprintf(buf,100,L"/* Align [%hi...%hi] */",parent0,parent1); this->tt->Emit(buf);
 			
 			this->tt->AssertEitherKnotOnRefPoint(parent0,parent1,0);
 			for (i = 0; i < children; i++) {
@@ -888,7 +888,7 @@ void TTSourceGenerator::Align(FVOverride fvOverride, short parent0, short childr
 		case fvForceX: // XAlign
 		case fvForceY:	// YAlign
 		case fvStandard: // DAlign
-			swprintf(buf,L"/* %cAlign [%hi...%hi] */",fvOverride == fvStandard ? L'D' : (fvOverride == fvForceX ? L'X' : L'Y'),parent0,parent1); this->tt->Emit(buf);
+			swprintf(buf,100,L"/* %cAlign [%hi...%hi] */",fvOverride == fvStandard ? L'D' : (fvOverride == fvForceX ? L'X' : L'Y'),parent0,parent1); this->tt->Emit(buf);
 			
 			minX = Min(this->V[parent0].x,this->V[parent1].x); maxX = Max(this->V[parent0].x,this->V[parent1].x);
 			minY = Min(this->V[parent0].y,this->V[parent1].y); maxY = Max(this->V[parent0].y,this->V[parent1].y);
@@ -922,7 +922,7 @@ void TTSourceGenerator::Align(FVOverride fvOverride, short parent0, short childr
 			
 			break;
 
-		//	swprintf(buf,L"/* DAlign [%hi...%hi] */",parent0,parent1); this->tt->Emit(buf);
+		//	swprintf(buf,100,L"/* DAlign [%hi...%hi] */",parent0,parent1); this->tt->Emit(buf);
 			
 		//	this->tt->AssertEitherKnotOnRefPoint(parent0,parent1,0);
 		//	if (ppem >= 0) this->tt->AssertRoundingBelowPpem(rdtg,ppem);
@@ -1091,7 +1091,7 @@ bool ClassifyStroke(Vector A1, Vector A2, Vector B1, Vector B2, short ppem, bool
 	rightDirection = RDirectionV(B2,A2);
 	cosF0 = cos(Rad(MAXSTROKESIDEANGLEDIFFERENCE));
 	if (leftDirection.x*rightDirection.x + leftDirection.y*rightDirection.y < (ppem < 0 ? cosF0 : 2*cosF0*cosF0 - 1)) { // edges are "anti-parallel" || not nearly-parallel, RScalProdV(left,right);...
-		swprintf(error,L"cannot accept (X|Y)STROKE (edges differ by %f degrees or more)",(double)(ppem < 0 ? MAXSTROKESIDEANGLEDIFFERENCE : 2*MAXSTROKESIDEANGLEDIFFERENCE));
+		swprintf(error,100,L"cannot accept (X|Y)STROKE (edges differ by %f degrees or more)",(double)(ppem < 0 ? MAXSTROKESIDEANGLEDIFFERENCE : 2*MAXSTROKESIDEANGLEDIFFERENCE));
 		return false;
 	}
 	*strokeDirection = RAvgDirectionV(leftDirection,rightDirection);
@@ -1117,7 +1117,7 @@ void TTSourceGenerator::AssertStrokePhaseAngle(FVOverride fv, bool leftStationar
 		if (this->V[knot[A1]].y != 0) {
 			if (fv != fvOldMethod && this->attrib[knot[A1]].touched[yRomanDir]) { // remember current y position
 				this->tt->AssertFreeProjVector(yRomanDir);
-				swprintf(code,L"GC[N], %hi",knot[A1]); this->tt->Emit(code);
+				swprintf(code,100,L"GC[N], %hi",knot[A1]); this->tt->Emit(code);
 				this->tt->Emit(L"#BEGIN");			// need to start new block or else pre-push interferes with GC
 			}
 			this->tt->AssertFreeProjVector(yItalDir);
@@ -1143,7 +1143,7 @@ void TTSourceGenerator::AssertStrokePhaseAngle(FVOverride fv, bool leftStationar
 			} else {								// push it back up where it once belonged
 				this->tt->Emit(L"#END");				// end block started above
 				this->tt->AssertPVonCA(yRomanDir);
-				swprintf(code,L"SCFS[], %hi, *",knot[A1]); this->tt->Emit(code);
+				swprintf(code,100,L"SCFS[], %hi, *",knot[A1]); this->tt->Emit(code);
 			}
 			this->Touched(knot[A1],yAdjItalDir);
 		}
@@ -1166,14 +1166,14 @@ void TTSourceGenerator::Stroke(FVOverride fvOverride, bool leftStationary[], sho
 			if (this->tt) {
 				for (i = 0; i < 2; i++) cvtIndex[i] = cvt < 0 ? this->TheCvt(-1,-1,linkBlack,linkDiag,cvtStroke,Abs(distance[i])) : cvt;
 				if (cvtIndex[0] < 0 && cvtIndex[1] < 0)
-					swprintf(error,L"cannot accept STROKE (no cvt number found)");
+					swprintf(error,100,L"cannot accept STROKE (no cvt number found)");
 				else {
 					if (cvtIndex[0] < 0) cvtIndex[0] = cvtIndex[1];
 					else if (cvtIndex[1] < 0) cvtIndex[1] = cvtIndex[0];
 					mirpSide = Abs(distance[1]) > Abs(distance[0]) ? 1 : 0; // mirp the larger end
 					cvt = cvtIndex[mirpSide];
 					
-					swprintf(buf,L"/* Stroke [%hi,%hi]%hi-[%hi,%hi]%hi */",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
+					swprintf(buf,100,L"/* Stroke [%hi,%hi]%hi-[%hi,%hi]%hi */",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
 					
 					if (iStroke) this->AssertStrokePhaseAngle(fvOverride,leftStationary,knot);
 					
@@ -1267,7 +1267,7 @@ void TTSourceGenerator::Stroke(FVOverride fvOverride, bool leftStationary[], sho
 			if (cvt < 0)
 				cvt = this->TheCvt(-1,-1,linkBlack,linkDiag,cvtStroke,Abs(distance[0]));
 			if (cvt < 0)
-				swprintf(error,L"cannot accept DIAGONAL (no cvt number found)");
+				swprintf(error,100,L"cannot accept DIAGONAL (no cvt number found)");
 			else {
 				
 			//	       [B1]				leftStationary[0] := [A1]--->[A2]
@@ -1287,7 +1287,7 @@ void TTSourceGenerator::Stroke(FVOverride fvOverride, bool leftStationary[], sho
 			//	*    *****				and the fact that the projection vector will pass through both points on the same side, regardless of whether or not the other
 			//	[A1]*					point is stationary as well, hence the expressions (A1+2)%4 and (B1+2)%4 rather than B1 and A1 respectively to index knot[]
 				
-				swprintf(buf,L"/* Diagonal [%hi,%hi]%hi-[%hi,%hi]%hi */",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
+				swprintf(buf,100,L"/* Diagonal [%hi,%hi]%hi-[%hi,%hi]%hi */",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
 				
 				dotProd = strokeDirection.x*this->slope.x + strokeDirection.y*this->slope.y;
 				iStroke = Abs(dotProd) > this->cosF2; // angle between stroke and slope < MAXIMUM_ITALIC_ANGLE_DEVIATION
@@ -1365,7 +1365,7 @@ void TTSourceGenerator::Stroke(bool leftStationary[], short knot[], short cvt, s
 	leftDirection  = RDirectionV(this->V[knot[2]],this->V[knot[0]]);
 	rightDirection = RDirectionV(this->V[knot[3]],this->V[knot[1]]);
 	if (leftDirection.x*rightDirection.x + leftDirection.y*rightDirection.y < (ppem < 0 ? this->cosF0 : 2*this->cosF0*this->cosF0 - 1)) { // edges are "anti-parallel" || not nearly-parallel, RScalProdV(left,right);...
-		swprintf(error,L"cannot accept (X|Y)STROKE (edges differ by %f degrees or more)",(double)(ppem < 0 ? MAXSTROKESIDEANGLEDIFFERENCE : 2*MAXSTROKESIDEANGLEDIFFERENCE));
+		swprintf(error,100,L"cannot accept (X|Y)STROKE (edges differ by %f degrees or more)",(double)(ppem < 0 ? MAXSTROKESIDEANGLEDIFFERENCE : 2*MAXSTROKESIDEANGLEDIFFERENCE));
 	} else { // general stroke "action" command
 		for (i = 0; i < 4; i++) this->attrib[knot[i]].dStroke = true;
 		strokeDirection = RAvgDirectionV(leftDirection,rightDirection);
@@ -1381,7 +1381,7 @@ void TTSourceGenerator::Stroke(bool leftStationary[], short knot[], short cvt, s
 		if (this->tt) {
 			for (i = 0; i < 2; i++) cvtIndex[i] = cvt < 0 ? this->TheCvt(-1,-1,linkBlack,linkDiag,cvtStroke,Abs(distance[i])) : cvt;
 			if (cvtIndex[0] < 0 && cvtIndex[1] < 0)
-				swprintf(error,L"cannot accept STROKE (no cvt number found)");
+				swprintf(error,100,L"cannot accept STROKE (no cvt number found)");
 			else {
 				if (cvtIndex[0] < 0) cvtIndex[0] = cvtIndex[1];
 				else if (cvtIndex[1] < 0) cvtIndex[1] = cvtIndex[0];
@@ -1440,7 +1440,7 @@ void TTSourceGenerator::Stroke(bool leftStationary[], short knot[], short cvt, s
 			//							and the fact that the projection vector will pass through both points on the same side, regardless of whether or not the other
 			//							point is stationary as well, hence the expressions (A1+2)%4 and (B1+2)%4 rather than B1 and A1 respectively to index knot[]
 				
-				swprintf(buf,L"/- Stroke [%hi,%hi]%hi-[%hi,%hi]%hi -/",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
+				swprintf(buf,100,L"/- Stroke [%hi,%hi]%hi-[%hi,%hi]%hi -/",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
 				
 				A1 =  mirpSide*2+!leftStationary[ mirpSide];
 				A2 =  mirpSide*2+ leftStationary[ mirpSide];
@@ -1498,14 +1498,14 @@ void TTSourceGenerator::DStroke(bool leftStationary[], short knot[], short cvt, 
 	if (this->tt) {
 		for (i = 0; i < 2; i++) cvtIndex[i] = cvt < 0 ? this->TheCvt(-1,-1,linkBlack,xLinks ? linkX : linkY,cvtNewDiagStroke,Abs(distance[i])) : cvt;
 		if (cvtIndex[0] < 0 && cvtIndex[1] < 0)
-			swprintf(error,L"cannot accept DSTROKE (no cvt number found)");
+			swprintf(error,100,L"cannot accept DSTROKE (no cvt number found)");
 		else {
 			if (cvtIndex[0] < 0) cvt = cvtIndex[1];
 			else if (cvtIndex[1] < 0) cvt = cvtIndex[0];
 			else if (Abs(distance[0]) < Abs(distance[1])) cvt = cvtIndex[1];
 			else cvt = cvtIndex[0];
 			
-			swprintf(buf,L"/* DStroke [%hi,%hi]%hi-[%hi,%hi]%hi */",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
+			swprintf(buf,100,L"/* DStroke [%hi,%hi]%hi-[%hi,%hi]%hi */",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
 			this->tt->AssertAutoFlip(false);
 			this->tt->CALL656(leftStationary[0] != leftStationary[1],knot[  !leftStationary[0]],knot[  leftStationary[0]],
 																	 knot[2+!leftStationary[0]],knot[2+leftStationary[0]],cvt,ND_HEIGHT_STORE_1,xLinks,leftStationary[0] ? flip : !flip);
@@ -1533,14 +1533,14 @@ void TTSourceGenerator::IStroke(bool leftStationary[], short knot[], short heigh
 		if (this->tt) {
 			for (i = 0; i < 2; i++) cvtIndex[i] = cvt < 0 ? this->TheCvt(-1,-1,linkBlack,xLinks ? linkX : linkY,cvtNewDiagStroke,Abs(distance[i])) : cvt;
 			if (cvtIndex[0] < 0 && cvtIndex[1] < 0)
-				swprintf(error,L"cannot accept ISTROKE (no cvt number found)");
+				swprintf(error,100,L"cannot accept ISTROKE (no cvt number found)");
 			else {
 				if (cvtIndex[0] < 0) cvt = cvtIndex[1];
 				else if (cvtIndex[1] < 0) cvt = cvtIndex[0];
 				else if (Abs(distance[0]) < Abs(distance[1])) cvt = cvtIndex[1];
 				else cvt = cvtIndex[0];
 					
-				swprintf(buf,L"/* IStroke [%hi,%hi]%hi-[%hi,%hi]%hi */",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
+				swprintf(buf,100,L"/* IStroke [%hi,%hi]%hi-[%hi,%hi]%hi */",knot[0],knot[1],distance[0],knot[2],knot[3],distance[1]); this->tt->Emit(buf);
 				
 				for (i = 0; i < 4; i++) {
 					move[i] = this->attrib[knot[i]].cvt != height[i/2];
@@ -1566,7 +1566,7 @@ void TTSourceGenerator::IStroke(bool leftStationary[], short knot[], short heigh
 			}
 		}
 	} else {
-		swprintf(error,L"cannot accept ISTROKE (can be used for italic strokes only)");
+		swprintf(error,100,L"cannot accept ISTROKE (can be used for italic strokes only)");
 	}
 	*actualCvt = cvt;
 } /* TTSourceGenerator::IStroke */
@@ -1623,7 +1623,7 @@ void TTSourceGenerator::Serif(bool forward, short type, short knots, short knot[
 			
 			*****/
 			if (this->tt) {
-				swprintf(buf,L"/* Round serif %hi %hi %hi %hi %hi %hi %hi */",knot[0],knot[1],knot[2],knot[3],knot[4],knot[5],knot[6]); this->tt->Emit(buf);
+				swprintf(buf,100,L"/* Round serif %hi %hi %hi %hi %hi %hi %hi */",knot[0],knot[1],knot[2],knot[3],knot[4],knot[5],knot[6]); this->tt->Emit(buf);
 				this->Link(true, false,&this->yRomanPV,false,knot[0],knot[1],cvtSerifOther,illegalCvtNum,1,ppem,dist,&actualCvt,error);
 				this->Link(true, false,&this->yRomanPV,false,knot[0],knot[3],cvtSerifOther,illegalCvtNum,0,NULL,NULL,&actualCvt,error);
 				this->Link(true, false,&this->yRomanPV,false,knot[3],knot[4],cvtSerifOther,illegalCvtNum,1,ppem,dist,&actualCvt,error);
@@ -1653,7 +1653,7 @@ void TTSourceGenerator::Serif(bool forward, short type, short knots, short knot[
 			
 			*****/
 			if (this->tt) {
-				swprintf(buf,L"/* Triangular serif %hi %hi %hi %hi */",knot[0],knot[1],knot[2],knot[3]); this->tt->Emit(buf);
+				swprintf(buf,100,L"/* Triangular serif %hi %hi %hi %hi */",knot[0],knot[1],knot[2],knot[3]); this->tt->Emit(buf);
 				this->Link(true, false,&this->yRomanPV,false,knot[3],knot[2],cvtSerifCurveHeight,illegalCvtNum,0,NULL,NULL,&actualCvt,error);
 				this->Link(true, false,&this->yRomanPV,false,knot[2],knot[1],cvtSerifThin,  		illegalCvtNum,1,ppem,dist,&actualCvt,error);
 				this->Link(true, false,this->attrib[knot[0]].iStroke ? &this->yAdjItalPV : &this->yRomanPV,false,knot[2],knot[0],cvtSerifHeight,illegalCvtNum,1,ppem,dist,&actualCvt,error);
@@ -1721,17 +1721,17 @@ void TTSourceGenerator::Serif(bool forward, short type, short knots, short knot[
 			italBase = this->italic && absVectProd < length*this->sinF22; // angle between base and yAxis < 2*MAXIMUM_ITALIC_ANGLE_DEVIATION
 			if (vertBase || horzBase || italBase) {
 				if (this->tt) {
-					swprintf(buf,L"/* %s serif %hi %hi %hi */",forward ? L"Forward" : L"Backward",knot[1],knot[2],knot[3]); this->tt->Emit(buf);
+					swprintf(buf,100,L"/* %s serif %hi %hi %hi */",forward ? L"Forward" : L"Backward",knot[1],knot[2],knot[3]); this->tt->Emit(buf);
 					if (horzBase && type == 2) { // seems to be some kind of optimisation for the frequent case of a simple serif such as in a Times 'I'...
 						cvt[0] = this->TheCvt(knot[3],knot[1],linkGrey,linkX,cvtSerifExt,   -1);
 						cvt[1] = this->TheCvt(knot[1],knot[2],linkGrey,linkY,cvtSerifThin,  -1);
 						cvt[2] = this->TheCvt(knot[1],knot[3],linkGrey,linkY,cvtSerifHeight,-1);
 						if (cvt[0] < 0)
-							swprintf(error,L"cannot accept SERIF (need cvt numbers for XLINK(%hi,%hi))",knot[3],knot[1]);
+							swprintf(error,100,L"cannot accept SERIF (need cvt numbers for XLINK(%hi,%hi))",knot[3],knot[1]);
 						else if (cvt[1] < 0)
-							swprintf(error,L"cannot accept SERIF (need cvt numbers for YLINK(%hi,%hi))",knot[1],knot[2]);
+							swprintf(error,100,L"cannot accept SERIF (need cvt numbers for YLINK(%hi,%hi))",knot[1],knot[2]);
 						else if (cvt[2] < 0)
-							swprintf(error,L"cannot accept SERIF (need cvt numbers for YLINK(%hi,%hi))",knot[1],knot[3]);
+							swprintf(error,100,L"cannot accept SERIF (need cvt numbers for YLINK(%hi,%hi))",knot[1],knot[3]);
 						else {
 							short jumpPpemSize[1];
 							F26Dot6 pixelSize[1];
@@ -1760,7 +1760,7 @@ void TTSourceGenerator::Serif(bool forward, short type, short knots, short knot[
 					}
 				}
 			} else
-				swprintf(error,L"cannot accept SERIF (base differs from horizontal or vertical by %f degrees or more, or from italic angle by %f degrees or more)",
+				swprintf(error,100,L"cannot accept SERIF (base differs from horizontal or vertical by %f degrees or more, or from italic angle by %f degrees or more)",
 																									(double)serifFudge,(double)2*MAXIMUM_ITALIC_ANGLE_DEVIATION);
 			break;
 		}
@@ -1799,7 +1799,7 @@ void TTSourceGenerator::Serif(bool forward, short type, short knots, short knot[
 			if (vertBase || horzBase || italBase) {
 /* universal serif used by the new feature recognition */
 				if (this->tt) {
-					swprintf(buf,L"/* %s univ-serif %hi %hi %hi %hi */",forward ? L"Forward" : L"Backward",knot[1],knot[2],knot[3],knot[4]); this->tt->Emit(buf);
+					swprintf(buf,100,L"/* %s univ-serif %hi %hi %hi %hi */",forward ? L"Forward" : L"Backward",knot[1],knot[2],knot[3],knot[4]); this->tt->Emit(buf);
 					
 					this->Link(horzBase,false,horzBase ? &this->yRomanPV : &this->yRomanPV,false,knot[1],knot[3],cvtSerifThin,illegalCvtNum,1,ppem,dist,&actualCvt,error);
 					this->Link(!horzBase,false,!horzBase ? &this->yRomanPV : &this->yRomanPV,false,knot[4],knot[2],cvtSerifExt,illegalCvtNum,0,NULL,NULL,&actualCvt,error);
@@ -1815,7 +1815,7 @@ void TTSourceGenerator::Serif(bool forward, short type, short knots, short knot[
 					}
 				}
 			} else
-				swprintf(error,L"cannot accept SERIF (base differs from horizontal or vertical by %f degrees or more, or from italic angle by %f degrees or more)",
+				swprintf(error,100,L"cannot accept SERIF (base differs from horizontal or vertical by %f degrees or more, or from italic angle by %f degrees or more)",
 																									(double)serifFudge,(double)2*MAXIMUM_ITALIC_ANGLE_DEVIATION);
 			break;
 		}
@@ -1835,7 +1835,7 @@ void TTSourceGenerator::Scoop(short parent0, short child, short parent1, wchar_t
 	else if (base.x <= base.y*this->tanF) { dist = (short)base.x; y = false; } // near vertical
 	else {
 		ok = false;
-		swprintf(error,L"cannot accept SCOOP (base differs from horizontal or vertical by %f degrees or more)",(double)strokeFudge);
+		swprintf(error,100,L"cannot accept SCOOP (base differs from horizontal or vertical by %f degrees or more)",(double)strokeFudge);
 	}
 	if (ok)
 		if (this->tt) this->Link(y,false,y ? &this->yRomanPV : &this->yRomanPV,false,parent0,child,cvtScoopDepth,illegalCvtNum,0,NULL,NULL,&actualCvt,error);
@@ -1912,9 +1912,9 @@ void TTSourceGenerator::VacuFormRound(short type, short radius, bool forward[], 
 					for (i = 0; i < 4; i++) vacu->knot[i] = knot[i];
 					this->vacuForms++;
 				} else
-					swprintf(error,L"cannot accept VACUFORMROUND (no cvt number found)"); // if we have to test this at all!!!
+					swprintf(error,100,L"cannot accept VACUFORMROUND (no cvt number found)"); // if we have to test this at all!!!
 			} else
-				swprintf(error,L"too many VACUFORMROUND commands (cannot have more than %li VACUFORMROUNDs)",maxVacuForms);
+				swprintf(error,100,L"too many VACUFORMROUND commands (cannot have more than %li VACUFORMROUNDs)",maxVacuForms);
 	//	}
 	}
 } /* TTSourceGenerator::VacuFormRound */
@@ -2028,11 +2028,11 @@ void TTSourceGenerator::InitTTGenerator(TrueTypeFont *font, TrueTypeGlyph *glyph
 
 	if (this->tt) {
 		DateTimeStrg(dateTime);
-		swprintf(buf,L"/* TT glyph %li, char 0x%lx",this->glyphIndex,this->charCode);
-		if (L' ' < this->charCode && this->charCode < 0x7f) { swprintf(&buf[STRLENW(buf)],L" (%c)",(wchar_t)this->charCode); }
-		swprintf(&buf[STRLENW(buf)],L" */");
+		swprintf(buf,100,L"/* TT glyph %li, char 0x%lx",this->glyphIndex,this->charCode);
+		if (L' ' < this->charCode && this->charCode < 0x7f) { swprintf(&buf[STRLENW(buf)],10,L" (%c)",(wchar_t)this->charCode); }
+		swprintf(&buf[STRLENW(buf)],3, L" */");
 		this->tt->Emit(buf);
-		swprintf(buf,L"/* VTT %s compiler %s */",VTTVersionString,dateTime); this->tt->Emit(buf);
+		swprintf(buf,100,L"/* VTT %s compiler %s */",VTTVersionString,dateTime); this->tt->Emit(buf);
 	}
 } /* TTSourceGenerator::InitTTGenerator */
 
@@ -2400,8 +2400,8 @@ void TTSourceGenerator::DoVacuFormRound(void) {
 		labels = 1;
 		for (i = 0; i < this->vacuForms; i++) if (this->vacuForm[i].type == 2) labels++;
 		this->tt->Emit(L"MPPEM[]");
-		swprintf(buf,L"GT[], %hi, *",this->vacuFormLimit); this->tt->Emit(buf);
-		swprintf(buf,L"JROF[], #LRnd%hi, *",labels); this->tt->Emit(buf); // branch if vacuFormLimit > ppem...
+		swprintf(buf,100,L"GT[], %hi, *",this->vacuFormLimit); this->tt->Emit(buf);
+		swprintf(buf,100,L"JROF[], #LRnd%hi, *",labels); this->tt->Emit(buf); // branch if vacuFormLimit > ppem...
 		this->tt->Emit(L"#BEGIN");
 	}
 	labelNumber = 0;
@@ -2422,14 +2422,14 @@ void TTSourceGenerator::DoVacuFormRound(void) {
 				if (pass == 0 && i == first || pass == 3) {
 					if (pass == 3) { // type == 2
 						this->tt->AssertFreeProjVector(yRomanDir);
-						if (this->glyph->y[y2] > this->glyph->y[y1]) swprintf(buf,L"MD[N], %hi, %hi",y2,y1);
-						else										 swprintf(buf,L"MD[N], %hi, %hi",y1,y2);
+						if (this->glyph->y[y2] > this->glyph->y[y1]) swprintf(buf,100,L"MD[N], %hi, %hi",y2,y1);
+						else										 swprintf(buf,100,L"MD[N], %hi, %hi",y1,y2);
 						this->tt->Emit(buf);
-						swprintf(buf,L"EQ[], 64, *"); this->tt->Emit(buf);
+						swprintf(buf,100,L"EQ[], 64, *"); this->tt->Emit(buf);
 					} else {
-						swprintf(buf,L"RS[], %hi",MAIN_STROKE_IS_ONE_PIXEL_STORAGE); this->tt->Emit(buf);
+						swprintf(buf,100,L"RS[], %hi",MAIN_STROKE_IS_ONE_PIXEL_STORAGE); this->tt->Emit(buf);
 					}
-					swprintf(buf,L"JROF[], #LRnd%hi, *",labelNumber); this->tt->Emit(buf);
+					swprintf(buf,100,L"JROF[], #LRnd%hi, *",labelNumber); this->tt->Emit(buf);
 					this->tt->Emit(L"#BEGIN");
 				}
 				
@@ -2535,12 +2535,12 @@ void TTSourceGenerator::DoVacuFormRound(void) {
 						// optimise for speed: exclude any on-curve points on the fringe of the interval
 						for (l = lo; l <= hi && this->glyph->onCurve[l]; l++);
 						for (h = hi; h >= lo && this->glyph->onCurve[h]; h--);
-						if (h > l) swprintf(buf,L"FLIPRGON[], %hi, %hi",l,h); else if (h == l) swprintf(buf,L"FLIPPT[], %hi",l);
+						if (h > l) swprintf(buf,100,L"FLIPRGON[], %hi, %hi",l,h); else if (h == l) swprintf(buf,100,L"FLIPPT[], %hi",l);
 						if (h >= l) this->tt->Emit(buf);
 						lo = hi+1;
 					}
 					this->tt->Emit(L"#END");
-					swprintf(buf,L"#LRnd%hi:",labelNumber); this->tt->Emit(buf);
+					swprintf(buf,100,L"#LRnd%hi:",labelNumber); this->tt->Emit(buf);
 					labelNumber++;
 					for (j = 0; j < this->knots; j++) this->attrib[j].vacu = false; // reset
 				}
@@ -2549,7 +2549,7 @@ void TTSourceGenerator::DoVacuFormRound(void) {
 	}
 	if (this->vacuFormLimit >= 0) {
 		this->tt->Emit(L"#END");
-		swprintf(buf,L"#LRnd%hi:",labels); this->tt->Emit(buf);
+		swprintf(buf,100,L"#LRnd%hi:",labels); this->tt->Emit(buf);
 	}
 
 	this->vacuFormLimit = -1;

@@ -20,9 +20,11 @@
 #define _CRT_NON_CONFORMING_SWPRINTFS
 
 #include <stdio.h> /* for swprintf  */
+#include <wchar.h>
 #include <string.h> /* for  wcslen */
-#include <Limits.h> /* for SHRT_MIN MAX */
+#include <limits.h> /* for SHRT_MIN MAX */
 #include "pch.h"
+
 
 #define SHORTMAX 32767
 #define SHORTMIN -32768
@@ -216,9 +218,9 @@ typedef struct {
 
 
 typedef struct {
-	wchar_t  type;
-	wchar_t	 code;
-	wchar_t	 result;
+	wchar_t	type;
+	wchar_t	code;
+	wchar_t	result;
 } asm_BooleanTranslationType;
 
 typedef struct {
@@ -227,8 +229,8 @@ typedef struct {
 	wchar_t	Reserved2;
 	wchar_t	Reserved3;
 	const wchar_t	*explanation;
-	short     lowestValidValue;		/* 6-7-90 JTS Range Checking Adds */
-	short		highestValidValue;		/* 6-7-90 JTS Range Checking Adds */
+	short	lowestValidValue;		/* 6-7-90 JTS Range Checking Adds */
+	short	highestValidValue;		/* 6-7-90 JTS Range Checking Adds */
 } asm_PushAndPopDescriptionType;
 
 /* lower case is reserved for loop variable dependent pops */
@@ -243,18 +245,18 @@ asm_PushAndPopDescriptionType asm_ppDescription1[] = {
 	{ L'J',L' ',L' ',L' ',	L"Index into storage area" ,0 ,0},
 	{ L'*',L' ',L' ',L' ',	L"Anything" ,SHORTMIN ,SHORTMAX},
 	{ L'&',L' ',L' ',L' ',	L"Entire Stack" ,SHORTMIN ,SHORTMAX},
-	{ L'C',L' ',L' ',L' ',  L"Contour Number" ,0 ,0},
-	{ L'N', L' ',L' ',L' ', L"Small Number" ,0 ,255},
-	{ L'V',L' ',L' ',L' ',  L"Positive Value" ,0 ,SHORTMAX},	/* New values added to use RangeChecking*/
-	{ L'L', L' ',L' ',L' ', L"Label" ,SHORTMIN ,SHORTMAX}, /* new ClaudeBe, to parse the label of a JR instruction */
-	{ L'A', L' ',L' ',L' ', L"Unsigned Byte" ,0 ,255}, /* NPUSH, number of puses */
-	{ L'H', L' ',L' ',L' ', L"Signed Word" ,SHORTMIN ,SHORTMAX}  /* PUSHW argument */
+	{ L'C',L' ',L' ',L' ',	L"Contour Number" ,0 ,0},
+	{ L'N', L' ',L' ',L' ',	L"Small Number" ,0 ,255},
+	{ L'V',L' ',L' ',L' ',	L"Positive Value" ,0 ,SHORTMAX},	/* New values added to use RangeChecking*/
+	{ L'L', L' ',L' ',L' ',	L"Label" ,SHORTMIN ,SHORTMAX}, /* new ClaudeBe, to parse the label of a JR instruction */
+	{ L'A', L' ',L' ',L' ',	L"Unsigned Byte" ,0 ,255}, /* NPUSH, number of puses */
+	{ L'H', L' ',L' ',L' ',	L"Signed Word" ,SHORTMIN ,SHORTMAX}  /* PUSHW argument */
 };	/* See typedef asm_PushAndPopDescriptionType (above) 6-7-90 JTS Range Checking Adds */
 
 #define NumberOfPPEntries  15 
 
 tt_CompilerSwitchType tt_CompilerSwitch[] = {
-/****  Instruction name, descriptive info,    index *****/
+/****  Instruction name, descriptive info, index *****/
 	{ L"PUSH",		L"Push arguments on the stack", 	tt_Push_Switch },
 	{ L"PUSHON",	L"Set direct push mode on", 		tt_PushOn_Switch },
 	{ L"PUSHOFF",	L"Set direct push mode off", 		tt_PushOff_Switch },
@@ -452,9 +454,9 @@ const tt_InstructionType tt_instruction[] = {
 	{ L"USERAE",	L"User Defined AE",								L"",		L"",		0xAE, L"" },
 	{ L"USERAF",	L"User Defined AF",								L"",		L"",		0xAF, L"" },
 	{ L"PUSHB",		L"PUSH Bytes",									L"",		L"",		0xB0, L"P" }, /* fix this */
-	{ L"PUSHW",		L"PUSH Words",									L"",		L"", 		0xB8, L"P" },
-	{ L"MDRP",		L"Move Direct Relative Point",					L"P",		L"", 		0xC0, L"M>RCc" },
-	{ L"MIRP",		L"Move Indirect Relative Point",				L"PI",		L"", 		0xE0, L"M>RCc" },
+	{ L"PUSHW",		L"PUSH Words",									L"",		L"",		0xB8, L"P" },
+	{ L"MDRP",		L"Move Direct Relative Point",					L"P",		L"",		0xC0, L"M>RCc" },
+	{ L"MIRP",		L"Move Indirect Relative Point",				L"PI",		L"",		0xE0, L"M>RCc" },
 
 	{ L"DLTP1",		L"DELTA Point 1, direct",						L"***",		L"",		0x15D, L"" },
 	{ L"DLTP2",		L"DELTA Point 2, direct",						L"***",		L"",		0x171, L"" },
@@ -465,15 +467,15 @@ const tt_InstructionType tt_instruction[] = {
  	/* Jie 6-22-90 */
 	/* #define FakeCode	0xAF*/
 	#define FakeCode	0xFFFF	
-	{ L"OFFSET",	L"Component character",					        L"V**",		 L"", 	FakeCode, L"R" },
-	{ L"SOFFSET",	L"Component character",					        L"V******",	 L"", 	FakeCode, L"R" },
-	{ L"ANCHOR",	L"Component character",					        L"V**",		 L"", 	FakeCode, L"" },
-	{ L"SANCHOR",	L"Component character",					        L"V******",  L"", 	FakeCode, L"" },
-	{ L"OVERLAP",	L"Component character",					        L"",  		L"", 	FakeCode, L"" },
-	{ L"NONOVERLAP",L"Component character",					        L"",  		L"", 	FakeCode, L"" },
-	{ L"USEMYMETRICS",L"Component character",					    L"",  		L"", 	FakeCode, L"" },
-	{ L"SCALEDCOMPONENTOFFSET",L"Component character",				L"",  		L"", 	FakeCode, L"" },
-	{ L"UNSCALEDCOMPONENTOFFSET",L"Component character",			L"",  		L"", 	FakeCode, L"" },
+	{ L"OFFSET",	L"Component character",							L"V**",		L"",	FakeCode, L"R" },
+	{ L"SOFFSET",	L"Component character",							L"V******",	L"",	FakeCode, L"R" },
+	{ L"ANCHOR",	L"Component character",							L"V**",		L"",	FakeCode, L"" },
+	{ L"SANCHOR",	L"Component character",							L"V******",	L"",	FakeCode, L"" },
+	{ L"OVERLAP",	L"Component character",							L"",		L"",	FakeCode, L"" },
+	{ L"NONOVERLAP",L"Component character",							L"",		L"",	FakeCode, L"" },
+	{ L"USEMYMETRICS",L"Component character",						L"",		L"",	FakeCode, L"" },
+	{ L"SCALEDCOMPONENTOFFSET",L"Component character",				L"",		L"",	FakeCode, L"" },
+	{ L"UNSCALEDCOMPONENTOFFSET",L"Component character",			L"",		L"",	FakeCode, L"" },
 };
 
 /* if we add/remove instructions, we should update tt_TOTALNUMBEROFINSTRUCTIONS in the .h file too */
@@ -518,17 +520,17 @@ const asm_BooleanTranslationType asm_booleanTranslation1[] = {
 /**** moved and adapted from label.c */
 
 #define  MAXJRPAIR   200			/* max. number of labels "#L100" or JR[]
-								     * lines in one block (#BEGIN-#END 
-								     */
+									 * lines in one block (#BEGIN-#END
+									 */
 #define MAXLABELLENGTH	22
 
 typedef struct {
-	wchar_t   label[MAXLABELLENGTH];			/* label  ["#L100"] */
-	short     iPos;					/* instruction position from #BEGIN */
-	short 	  *aPtr;				/* start ptr of argument storage */
+	wchar_t	label[MAXLABELLENGTH];	/* label  ["#L100"] */
+	short	iPos;					/* instruction position from #BEGIN */
+	short	*aPtr;					/* start ptr of argument storage */
 
-    short     cArg;			
-	wchar_t   *linePtr; /* pointer in the source to be able to display the location of an error */
+	short	cArg;
+	wchar_t	*linePtr; /* pointer in the source to be able to display the location of an error */
 }tt_jrWordType;
 
 
@@ -539,7 +541,7 @@ typedef struct {
  */
 typedef struct {
 	short num;
-	tt_jrWordType     *lab   [MAXJRPAIR];
+	tt_jrWordType *lab	[MAXJRPAIR];
 }tt_LabelType;
 
 /*
@@ -550,7 +552,7 @@ typedef struct {
 
 typedef struct {
 	short num;
-	tt_jrWordType *jr    [MAXJRPAIR];
+	tt_jrWordType *jr	[MAXJRPAIR];
 }tt_JRtype;
 
 /*  
@@ -558,15 +560,15 @@ typedef struct {
  *  eg.   #PUSH, 1,2, B1,  W2,  3,4
  */
  
-#define   PUSH_ARG		256			  /* max. num of argument on one PUSH [6] */
+#define PUSH_ARG		256			  /* max. num of argument on one PUSH [6] */
 
 typedef struct {
-	wchar_t		label[MAXLABELLENGTH];			/* label  ["#L100"] */
-	short		LocalIndex;					/* argument index from the beginning of the #PUSH */
+	wchar_t			label[MAXLABELLENGTH];			/* label  ["#L100"] */
+	short			LocalIndex;					/* argument index from the beginning of the #PUSH */
 
-	short	IsAByte;
-	unsigned char 	  *aPtr;				/* ptr of argument storage */
-	wchar_t      *linePtr;			/* pointer in the source to be able to display the location of an error */
+	short			IsAByte;
+	unsigned char	*aPtr;				/* ptr of argument storage */
+	wchar_t			*linePtr;			/* pointer in the source to be able to display the location of an error */
 }tt_psType;
 
 typedef struct {
@@ -581,16 +583,16 @@ typedef struct {
  */
  
 typedef struct {
-	wchar_t      label[MAXLABELLENGTH];			/* Label  ["#L100"] */
-	wchar_t      BWLabel[MAXLABELLENGTH];				/* BW word  ["B1"} */
-	short        iPos;					/* instruction position from #BEGIN */
-	wchar_t      *linePtr;  /* pointer in the source to be able to display the location of an error */
+	wchar_t		label[MAXLABELLENGTH];			/* Label  ["#L100"] */
+	wchar_t		BWLabel[MAXLABELLENGTH];				/* BW word  ["B1"} */
+	short		iPos;					/* instruction position from #BEGIN */
+	wchar_t		*linePtr;  /* pointer in the source to be able to display the location of an error */
 }tt_JrBWwordType;
 
 
 typedef struct {
-    short num;
-    tt_JrBWwordType  *bw	[MAXJRPAIR];  
+	short num;
+	tt_JrBWwordType *bw	[MAXJRPAIR];
 }tt_JrBWtype;
 
 
@@ -757,10 +759,7 @@ wchar_t *TT_ParseNumber( wchar_t *p, wchar_t *endP,short *Number, long * Selecti
 wchar_t *TT_ParsePUSHandSave(tt_PStype *ps,wchar_t *CurrentPtr,wchar_t * EOLPtr,short *argStore,short *argIdex, long * SelectionLength, short * tt_error );
 wchar_t *TT_ParsePUSHandSave(tt_PStype *ps,wchar_t *CurrentPtr,wchar_t * EOLPtr,short *argStore,short *argIdex, long * SelectionLength, short * tt_error )
 {
-	  
-
-
-    (*argIdex) = 0;	
+	(*argIdex) = 0;
 
 	while (CurrentPtr <= EOLPtr)
 	{
@@ -786,8 +785,8 @@ wchar_t *TT_ParsePUSHandSave(tt_PStype *ps,wchar_t *CurrentPtr,wchar_t * EOLPtr,
 			if ( *CurrentPtr == L'B' || *CurrentPtr == L'W' )
 			{
 				long StringLength;
-				if ( *CurrentPtr == L'B')      argStore[(*argIdex)] = 55;  /* reserve the space for the jump, one byte or one word */
-				else if (*CurrentPtr == L'W' ) argStore[(*argIdex)] = 5555;
+				if ( *CurrentPtr == L'B')		argStore[(*argIdex)] = 55;  /* reserve the space for the jump, one byte or one word */
+				else if (*CurrentPtr == L'W' )	argStore[(*argIdex)] = 5555;
 
 				StringLength = TT_GetStringLength (CurrentPtr, EOLPtr);
 				if (StringLength < 2)
@@ -874,8 +873,8 @@ void TT_JRpushON_ReplaceLabel(tt_JRtype  *JR,tt_LabelType *Label,short *argStore
  * repostion the  JR[], ( B1 = #L100) type arguments
  */
 
-void TT_JRpushOFF_ReplaceLabel(tt_JrBWtype  *JrBW,tt_PStype    *PS,tt_LabelType *Label, short * tt_error);
-void TT_JRpushOFF_ReplaceLabel(tt_JrBWtype  *JrBW,tt_PStype    *PS,tt_LabelType *Label, short * tt_error)
+void TT_JRpushOFF_ReplaceLabel(tt_JrBWtype *JrBW, tt_PStype *PS, tt_LabelType *Label, short *tt_error);
+void TT_JRpushOFF_ReplaceLabel(tt_JrBWtype *JrBW, tt_PStype *PS, tt_LabelType *Label, short *tt_error)
 {
 	short i,  labeliPos, delta, index;
 	
@@ -910,17 +909,17 @@ void TT_JRpushOFF_ReplaceLabel(tt_JrBWtype  *JrBW,tt_PStype    *PS,tt_LabelType 
 }
 
 
-wchar_t * TT_FindLabelError(tt_PStype    *PS, tt_JrBWtype  *JrBW, tt_JRtype  *JR, tt_LabelType *Label, wchar_t * CurrentPtr, long * SelectionLength, short * tt_error) ;
-wchar_t * TT_FindLabelError(tt_PStype    *PS, tt_JrBWtype  *JrBW, tt_JRtype  *JR, tt_LabelType *Label, wchar_t * CurrentPtr, long * SelectionLength, short * tt_error) 
-{				
+wchar_t * TT_FindLabelError(tt_PStype *PS, tt_JrBWtype *JrBW, tt_JRtype *JR, tt_LabelType *Label, wchar_t * CurrentPtr, long * SelectionLength, short * tt_error) ;
+wchar_t * TT_FindLabelError(tt_PStype *PS, tt_JrBWtype *JrBW, tt_JRtype *JR, tt_LabelType *Label, wchar_t * CurrentPtr, long * SelectionLength, short * tt_error)
+{
 	short i, k;
-	
+
 	/* look through the push on JR */
- 	if ( JR->num != 0) 
- 	{
-		for ( k  = 0; k < JR->num; k++) {
-			for ( i = 0; i < Label->num; i++) {
-				if ( ! wcscmp( JR->jr[k]->label,Label->lab[i]->label) )  break;
+	if (JR->num != 0)
+	{
+		for (k = 0; k < JR->num; k++ ) {
+			for ( i = 0; i < Label->num; i++ ) {
+				if ( ! wcscmp( JR->jr[k]->label, Label->lab[i]->label) ) break;
 			}
 			if ( i >= Label->num ) {
 				*tt_error = tt_LabelNotFound;
@@ -931,11 +930,11 @@ wchar_t * TT_FindLabelError(tt_PStype    *PS, tt_JrBWtype  *JrBW, tt_JRtype  *JR
 	}
 
 	/* look through the push off JR */
- 	if ( JrBW->num != 0) 
- 	{
-		for ( k  = 0; k < JrBW->num; k++) {
-			for ( i = 0; i < Label->num; i++) {
-				if ( ! wcscmp( JrBW->bw[k]->label,Label->lab[i]->label) )  break;
+	if ( JrBW->num != 0 )
+	{
+		for ( k  = 0; k < JrBW->num; k++ ) {
+			for ( i = 0; i < Label->num; i++ ) {
+				if ( ! wcscmp( JrBW->bw[k]->label,Label->lab[i]->label) ) break;
 			}
 			if ( i >= Label->num ) {
 				*tt_error = tt_LabelNotFound;
@@ -945,7 +944,7 @@ wchar_t * TT_FindLabelError(tt_PStype    *PS, tt_JrBWtype  *JrBW, tt_JRtype  *JR
 
 			/* look through the #PUSH,Bn,Wn for the corresponding label */
 			for ( i = 0; i < PS->num; i++) {
-				if ( ! wcscmp( JrBW->bw[k]->BWLabel,PS->ps[i]->label) )  break;
+				if ( ! wcscmp( JrBW->bw[k]->BWLabel,PS->ps[i]->label) ) break;
 			}
 			if ( i >= PS->num ) {
 				*tt_error = tt_LabelNotFound;
@@ -955,11 +954,11 @@ wchar_t * TT_FindLabelError(tt_PStype    *PS, tt_JrBWtype  *JrBW, tt_JRtype  *JR
 		}
 	}
 	/* check if every #PUSH,Bn,Wn has a corresponding JR[], */
- 	if ( PS->num != 0) 
+ 	if ( PS->num != 0 )
  	{
-		for ( k  = 0; k < PS->num; k++) {
-			for ( i = 0; i < JrBW->num; i++) {
-				if ( ! wcscmp( PS->ps[k]->label,JrBW->bw[i]->BWLabel) )  break;
+		for ( k  = 0; k < PS->num; k++ ) {
+			for ( i = 0; i < JrBW->num; i++ ) {
+				if ( ! wcscmp( PS->ps[k]->label,JrBW->bw[i]->BWLabel) ) break;
 			}
 			if ( i >= JrBW->num ) {
 				*tt_error = tt_LabelNotFound;
@@ -982,13 +981,12 @@ wchar_t * TT_FindLabelError(tt_PStype    *PS, tt_JrBWtype  *JrBW, tt_JRtype  *JR
  * all the information is put into Label
  */
 
-				
-void TT_SaveLabel(short numberofArgs,short numberofInstructions,long stringLenth,wchar_t *p,tt_LabelType *Label, short * tt_error);
-void TT_SaveLabel(short numberofArgs,short numberofInstructions,long stringLenth,wchar_t *p,tt_LabelType *Label, short * tt_error)
+void TT_SaveLabel(short numberofArgs, short numberofInstructions, long stringLenth, wchar_t *p,tt_LabelType *Label, short * tt_error);
+void TT_SaveLabel(short numberofArgs, short numberofInstructions, long stringLenth, wchar_t *p,tt_LabelType *Label, short * tt_error)
 {
 	short i, k;
 	
-	for ( k = Label->num-1; k >=0; k--) 
+	for ( k = Label->num-1; k >=0; k-- )
 	{
 		if (wcsncmp( Label->lab[k]->label, p, stringLenth) == 0  && (long)STRLENW(Label->lab[k]->label) == stringLenth )
 		{
@@ -1115,21 +1113,21 @@ wchar_t * TT_SaveJR(short numberofArgs,short numberofInstructions,wchar_t * Curr
 }
 
 
-void TT_FreeAllLabelMemory( tt_PStype    *PS, tt_JrBWtype  *JrBW, tt_LabelType *Label, tt_JRtype    *JR);
-void TT_FreeAllLabelMemory( tt_PStype    *PS, tt_JrBWtype  *JrBW, tt_LabelType *Label, tt_JRtype    *JR)
+void TT_FreeAllLabelMemory( tt_PStype *PS, tt_JrBWtype *JrBW, tt_LabelType *Label, tt_JRtype *JR);
+void TT_FreeAllLabelMemory( tt_PStype *PS, tt_JrBWtype *JrBW, tt_LabelType *Label, tt_JRtype *JR)
 {
-	
-	short k;	
-		
-	for ( k = Label->num-1; k >=0; k--)   DisposeP((void**)&Label->lab[k]);
-	for ( k = JR->num-1; k >=0; k--)      DisposeP((void**)&JR->jr[k] );
-	for ( k = JrBW->num-1; k >=0; k--)    DisposeP((void**)&JrBW->bw[k]);
-	for ( k = PS->num-1; k >=0; k--)      DisposeP((void**)&PS->ps[k]);
 
-   	 DisposeP((void**)&Label);
-   	 DisposeP((void**)&JR );
-   	 DisposeP((void**)&JrBW);
-     DisposeP((void**)&PS);
+	short k;
+
+	for ( k = Label->num-1; k >=0; k--)	DisposeP((void**)&Label->lab[k]);
+	for ( k = JR->num-1; k >=0; k--)	DisposeP((void**)&JR->jr[k]);
+	for ( k = JrBW->num-1; k >=0; k--)	DisposeP((void**)&JrBW->bw[k]);
+	for ( k = PS->num-1; k >=0; k--)	DisposeP((void**)&PS->ps[k]);
+
+	DisposeP((void**)&Label);
+	DisposeP((void**)&JR );
+	DisposeP((void**)&JrBW);
+	DisposeP((void**)&PS);
 }
 
 /**** end of label related code ****/
@@ -3170,246 +3168,246 @@ void TT_GetErrorString (short ErrorNb, wchar_t * ErrorString)
 
 	switch (ErrorNb ) {
 		case tt_NoError:
-			swprintf( ErrorString, L"There is no Error");
+			swprintf(ErrorString,100, L"There is no Error");
 			break;
 		case tt_EmbeddedComment:
-			swprintf( ErrorString, L"Nested comment");
+			swprintf(ErrorString,100, L"Nested comment");
 			break;
 		case tt_UnterminatedComment:
-			swprintf( ErrorString, L"Unterminated comment");
+			swprintf(ErrorString,100, L"Unterminated comment");
 			break;
 		case tt_UnknownSwitch:
-			swprintf( ErrorString, L"Unknown compiler switch");
+			swprintf(ErrorString,100, L"Unknown compiler switch");
 			break;
 		case tt_UnknownInstruction:
-			swprintf( ErrorString, L"Unknown instruction");
+			swprintf(ErrorString,100, L"Unknown instruction");
 			break;
 		case tt_TwoInstructionsInSameLine:
-			swprintf( ErrorString, L"End of line expected");
+			swprintf(ErrorString,100, L"End of line expected");
 			break;
 		case tt_BooleanFlagsMissing:
-			swprintf( ErrorString, L"bool flags missing");
+			swprintf(ErrorString,100, L"bool flags missing");
 			break;
 		case tt_WrongNumberOfBoolean:
-			swprintf( ErrorString, L"Wrong number of boolean flags");
+			swprintf(ErrorString,100, L"Wrong number of boolean flags");
 			break;
 		case tt_TooManyBooleans:
-			swprintf( ErrorString, L"Too many booleans");
+			swprintf(ErrorString,100, L"Too many booleans");
 			break;
 		case tt_UnrecognizedBoolean:
-			swprintf( ErrorString, L"Unrecognized boolean flag");
+			swprintf(ErrorString,100, L"Unrecognized boolean flag");
 			break;
 		case tt_MissingClosingBracket:
-			swprintf( ErrorString, L"Missing closing bracket");
+			swprintf(ErrorString,100, L"Missing closing bracket");
 			break;
 		case tt_SLOOPArgumentBufferTooSmall:
-			swprintf( ErrorString, L"SLOOP number too big, the compiler cannot handle such a big number");
+			swprintf(ErrorString,100, L"SLOOP number too big, the compiler cannot handle such a big number");
 			break;
 		case tt_EmptyParameterList:
-			swprintf( ErrorString, L"Missing comma between parameters or empty parameter list");
+			swprintf(ErrorString,100, L"Missing comma between parameters or empty parameter list");
 			break;
 		case tt_UnableToParseArgument:
-			swprintf( ErrorString, L"Unable to parse argument");
+			swprintf(ErrorString,100, L"Unable to parse argument");
 			break;
 		case tt_MissingParameters:
-			swprintf( ErrorString, L"Missing parameters or missing comma between parameters ");
+			swprintf(ErrorString,100, L"Missing parameters or missing comma between parameters ");
 			break;
 		case tt_PointNbOutOfRange:
-			swprintf( ErrorString, L"Point number out of range");
+			swprintf(ErrorString,100, L"Point number out of range");
 			break;
 		case tt_CVTIndexOutOfRange:
-			swprintf( ErrorString, L"CVT index out of range");
+			swprintf(ErrorString,100, L"CVT index out of range");
 			break;
 		case tt_StorageIndexOutOfRange:
-			swprintf( ErrorString, L"Storage number out of range");
+			swprintf(ErrorString,100, L"Storage number out of range");
 			break;
 		case tt_ContourNbOutOfRange:
-			swprintf( ErrorString, L"Contour number out of range");
+			swprintf(ErrorString,100, L"Contour number out of range");
 			break;
 		case tt_FunctionNbOutOfRange:
-			swprintf( ErrorString, L"Function number out of range");
+			swprintf(ErrorString,100, L"Function number out of range");
 			break;
 		case tt_ArgumentOutOfRange:
-			swprintf( ErrorString, L"Argument number out of range");
+			swprintf(ErrorString,100, L"Argument number out of range");
 			break;
 		case tt_ArgumentIndexOutOfRange:
-			swprintf( ErrorString, L"Compiler Error! Argument index out of range");
+			swprintf(ErrorString,100, L"Compiler Error! Argument index out of range");
 			break;
 		case tt_NotEnoughMemory:
-			swprintf( ErrorString, L"Not enough memory");
+			swprintf(ErrorString,100, L"Not enough memory");
 			break;
 		case tt_DeltaListMissing:
-			swprintf( ErrorString, L"Delta, parameter list missing");
+			swprintf(ErrorString,100, L"Delta, parameter list missing");
 			break;
 		case tt_DeltaOpeningParenthesisMissing:
-			swprintf( ErrorString, L"Delta, opening parenthesis missing");
+			swprintf(ErrorString,100, L"Delta, opening parenthesis missing");
 			break;
 		case tt_DeltaClosingParenthesisMissing:
-			swprintf( ErrorString, L"Delta, closing parenthesis missing");
+			swprintf(ErrorString,100, L"Delta, closing parenthesis missing");
 			break;
 		case tt_PointSizeOutOfRange:
-			swprintf( ErrorString, L"Delta, point size out of range");
+			swprintf(ErrorString,100, L"Delta, point size out of range");
 			break;
 		case tt_DeltaDenominatorMissing:
-			swprintf( ErrorString, L"Delta, denominator missing, format should be eg: (19 @12 3/8)");
+			swprintf(ErrorString,100, L"Delta, denominator missing, format should be eg: (19 @12 3/8)");
 			break;
 		case tt_DeltaWrongDenominator:
-			swprintf( ErrorString, L"Delta, wrong denominator, format should be eg: (19 @12 3/8)");
+			swprintf(ErrorString,100, L"Delta, wrong denominator, format should be eg: (19 @12 3/8)");
 			break;
 		case tt_DeltaAtSignMissing:
-			swprintf( ErrorString, L"Delta, @ sign missing, format should be eg: (19 @12 3/8)");
+			swprintf(ErrorString,100, L"Delta, @ sign missing, format should be eg: (19 @12 3/8)");
 			break;
 		case tt_DeltaClosingBracketMissing:
-			swprintf( ErrorString, L"Delta, closing bracket missing");
+			swprintf(ErrorString,100, L"Delta, closing bracket missing");
 			break;
 		case tt_TooManyDeltas:
-			swprintf( ErrorString, L"Delta, too many deltas in the same line");
+			swprintf(ErrorString,100, L"Delta, too many deltas in the same line");
 			break;
 		case tt_DeltaOORangePpem:
-			swprintf( ErrorString, L"Delta, out of range ppem for Delta");
+			swprintf(ErrorString,100, L"Delta, out of range ppem for Delta");
 			break;
 		case tt_TooManyLabels:
-			swprintf( ErrorString, L"Too many labels in the same block");
+			swprintf(ErrorString,100, L"Too many labels in the same block");
 			break;
 		case tt_LabelTooLong:
-			swprintf( ErrorString, L"Label too long, limited to %hd character",(short) (MAXLABELLENGTH-1));
+			swprintf(ErrorString,100, L"Label too long, limited to %hd character",(short) (MAXLABELLENGTH-1));
 			break;
 		case tt_DuplicateLabel:
-			swprintf( ErrorString, L"Same label used twice");
+			swprintf(ErrorString,100, L"Same label used twice");
 			break;
 		case tt_EndWithoutBegin:
-			swprintf( ErrorString, L"#END without corresponding #BEGIN");
+			swprintf(ErrorString,100, L"#END without corresponding #BEGIN");
 			break;
 		case tt_MissingEndBlock:
-			swprintf( ErrorString, L"End(s) of block, #END, missing");
+			swprintf(ErrorString,100, L"End(s) of block, #END, missing");
 			break;
 		case tt_TooManyEnbeddedBlocks:
-			swprintf( ErrorString, L"Too many levels of nested blocks, limit = %hd",(short) (MAXBLOCKEMBEDDING-1));
+			swprintf(ErrorString,100, L"Too many levels of nested blocks, limit = %hd",(short) (MAXBLOCKEMBEDDING-1));
 			break;
 		case tt_CompositeCode:
-			swprintf( ErrorString, L"Composite commands mixed into TrueType code");
+			swprintf(ErrorString,100, L"Composite commands mixed into TrueType code");
 			break;
 		case tt_VoidLabel:
-			swprintf( ErrorString, L"NULL label, must have at least one character");
+			swprintf(ErrorString,100, L"NULL label, must have at least one character");
 			break;
 		case tt_LabelNotFound:
-			swprintf( ErrorString, L"Corresponding label not found");
+			swprintf(ErrorString,100, L"Corresponding label not found");
 			break;
 		case tt_ExpectingAComma:
-			swprintf( ErrorString, L"#PUSH argument list, missing arguments or missing comma");
+			swprintf(ErrorString,100, L"#PUSH argument list, missing arguments or missing comma");
 			break;
 		case tt_TooManyPushArgs:
-			swprintf( ErrorString, L"#PUSH, too many arguments, limit = %hd", (short)(PUSH_ARG));
+			swprintf(ErrorString,100, L"#PUSH, too many arguments, limit = %hd", (short)(PUSH_ARG));
 			break;
 		case tt_ParseOverflow:
-			swprintf( ErrorString, L"Number too large to be parsed, larger than 32,767");
+			swprintf(ErrorString,100, L"Number too large to be parsed, larger than 32,767");
 			break;
 		case tt_JRExpectingABracket:
-			swprintf( ErrorString, L"JR instruction in PushOff mode, expecting an opening bracket");
+			swprintf(ErrorString,100, L"JR instruction in PushOff mode, expecting an opening bracket");
 			break;
 		case tt_JRExpectingABWLabel:
-			swprintf( ErrorString, L"JR instruction in PushOff mode, expecting an Bn or a Wn label");
+			swprintf(ErrorString,100, L"JR instruction in PushOff mode, expecting an Bn or a Wn label");
 			break;
 		case tt_JRExpectingAEqual:
-			swprintf( ErrorString, L"JR instruction in PushOff mode, expecting an equal between labels");
+			swprintf(ErrorString,100, L"JR instruction in PushOff mode, expecting an equal between labels");
 			break;
 		case tt_JRExpectingALabel:
-			swprintf( ErrorString, L"JR instruction in PushOff mode, expecting a #label");
+			swprintf(ErrorString,100, L"JR instruction in PushOff mode, expecting a #label");
 			break;
 		case tt_JumpTooBigForByte:
-			swprintf( ErrorString, L"#PUSH, Bn : jump too far to be a byte");
+			swprintf(ErrorString,100, L"#PUSH, Bn : jump too far to be a byte");
 			break;
 		case tt_JumpNegativeForByte:
-			swprintf( ErrorString, L"#PUSH, Bn : negative jump cannot be a byte, use Wn");
+			swprintf(ErrorString,100, L"#PUSH, Bn : negative jump cannot be a byte, use Wn");
 			break;
 		case tt_EIFwithoutIF:
-			swprintf( ErrorString, L"EIF without IF");
+			swprintf(ErrorString,100, L"EIF without IF");
 			break;
 		case tt_ELSEwithoutIF:
-			swprintf( ErrorString, L"ELSE without IF");
+			swprintf(ErrorString,100, L"ELSE without IF");
 			break;
 		case tt_ELSEwithinELSE:
-			swprintf( ErrorString, L"expecting a EIF");
+			swprintf(ErrorString,100, L"expecting a EIF");
 			break;
 		case tt_TooManyEmbeddedIF:
-			swprintf( ErrorString, L"too many embedded IF");
+			swprintf(ErrorString,100, L"too many embedded IF");
 			break;
 		case tt_ExpectingaBEGIN:
-			swprintf( ErrorString, L"expecting a #BEGIN after IF[], ELSE[], FDEF[] or IDEF[] in push on mode");
+			swprintf(ErrorString,100, L"expecting a #BEGIN after IF[], ELSE[], FDEF[] or IDEF[] in push on mode");
 			break;
 		case tt_FDEFInsideFDEF:
-			swprintf( ErrorString, L"FDEF found within FDEF - ENDF pair");
+			swprintf(ErrorString,100, L"FDEF found within FDEF - ENDF pair");
 			break;
 		case tt_FDEFInsideIDEF:
-			swprintf( ErrorString, L"FDEF found within IDEF - ENDF pair");
+			swprintf(ErrorString,100, L"FDEF found within IDEF - ENDF pair");
 			break;
 		case tt_IDEFInsideFDEF:
-			swprintf( ErrorString, L"IDEF found within FDEF - ENDF pair");
+			swprintf(ErrorString,100, L"IDEF found within FDEF - ENDF pair");
 			break;
 		case tt_IDEFInsideIDEF:
-			swprintf( ErrorString, L"IDEF found within IDEF - ENDF pair");
+			swprintf(ErrorString,100, L"IDEF found within IDEF - ENDF pair");
 			break;
 		case tt_ENDFwithoutFDEF:
-			swprintf( ErrorString, L"ENDF found without corresponding FDEF or IDEF");
+			swprintf(ErrorString,100, L"ENDF found without corresponding FDEF or IDEF");
 			break;
 		case tt_IFwithoutEIF:
-			swprintf( ErrorString, L"IF without corresponding EIF");
+			swprintf(ErrorString,100, L"IF without corresponding EIF");
 			break;
 		case tt_FDEFwithoutENDF:
-			swprintf( ErrorString, L"FDEF without corresponding ENDF");
+			swprintf(ErrorString,100, L"FDEF without corresponding ENDF");
 			break;
 		case tt_IDEFwithoutENDF:
-			swprintf( ErrorString, L"IDEF without corresponding ENDF");
+			swprintf(ErrorString,100, L"IDEF without corresponding ENDF");
 			break;
 
 		case tt_PUSHONwhenAlreadyOn:
-			swprintf( ErrorString, L"#PUSHON when already in push on mode");
+			swprintf(ErrorString,100, L"#PUSHON when already in push on mode");
 			break;
 		case tt_PUSHOFFwhenAlreadyOff:
-			swprintf( ErrorString, L"#PUSHOFF when already in push off mode");
+			swprintf(ErrorString,100, L"#PUSHOFF when already in push off mode");
 			break;
 		case tt_IFgoingAcrossBlocks:
-			swprintf( ErrorString, L"IF statement going across block (#BEGIN #END) boundaries");
+			swprintf(ErrorString,100, L"IF statement going across block (#BEGIN #END) boundaries");
 			break;
 		case tt_FDEFgoingAcrossBlocks:
-			swprintf( ErrorString, L"FDEF statement going across block (#BEGIN #END) boundaries");
+			swprintf(ErrorString,100, L"FDEF statement going across block (#BEGIN #END) boundaries");
 			break;
 		case tt_IDEFgoingAcrossBlocks:
-			swprintf( ErrorString, L"IDEF statement going across block (#BEGIN #END) boundaries");
+			swprintf(ErrorString,100, L"IDEF statement going across block (#BEGIN #END) boundaries");
 			break;
 
 		case tt_IDEF_FDEFinGlyphProgram:
-			swprintf( ErrorString, L"FDEF and IDEF can be called only from font program or the pre-program");
+			swprintf(ErrorString,100, L"FDEF and IDEF can be called only from font program or the pre-program");
 			break;
 
 		case tt_INSTCTRLnotInPreProgram:
-			swprintf( ErrorString, L"INSTCTRL[] can only be called from the pre-program");
+			swprintf(ErrorString,100, L"INSTCTRL[] can only be called from the pre-program");
 			break;
 		case tt_ProgramTooBig:
-			swprintf( ErrorString, L"Program too big, if you really need such a big program, call product support");
+			swprintf(ErrorString,100, L"Program too big, if you really need such a big program, call product support");
 			break;
 		case tt_TooManyArguments:
-			swprintf( ErrorString, L"Program too big (too many arguments), if you really need such a big program, call product support");
+			swprintf(ErrorString,100, L"Program too big (too many arguments), if you really need such a big program, call product support");
 			break;
 		case tt_DELTAWithoutArguments:
-			swprintf( ErrorString, L"DELTA without argument in PUSHON mode");
+			swprintf(ErrorString,100, L"DELTA without argument in PUSHON mode");
 			break;
 		case tt_DELTAWithArguments:
-			swprintf( ErrorString, L"DELTA with arguments in PUSHOFF mode");
+			swprintf(ErrorString,100, L"DELTA with arguments in PUSHOFF mode");
 			break;
 		case tt_PUSHBWInPushON:
-			swprintf( ErrorString, L"Illegal use of PUSHB or PUSHW in PUSHON mode, use #PUSH instead");
+			swprintf(ErrorString,100, L"Illegal use of PUSHB or PUSHW in PUSHON mode, use #PUSH instead");
 			break;
 		case tt_WildCardInPush:
-			swprintf( ErrorString, L"Illegal use * in a PUSH instruction");
+			swprintf(ErrorString,100, L"Illegal use * in a PUSH instruction");
 			break;
 
 		case tt_NotImplemented:
-			swprintf( ErrorString, L"Not implemented");
+			swprintf(ErrorString,100, L"Not implemented");
 			break;
 			
 		default :
-			swprintf( ErrorString, L"Unknown error!");
+			swprintf(ErrorString,100, L"Unknown error!");
 			break;
 	}
 
@@ -3750,8 +3748,8 @@ wchar_t *CO_Compile(TrueTypeFont * font, TrueTypeGlyph * glyph, wchar_t *StartPt
 	*co_error = co_NoError;
 	prevInstrIsCompInstr = false;
 
-    glyph->componentSize = 0;
-    compositeProfile.GlobalUSEMYMETRICS	   = 0;
+	glyph->componentSize = 0;
+	compositeProfile.GlobalUSEMYMETRICS	   = 0;
 	compositeProfile.GlobalSCALEDCOMPONENTOFFSET = 0;
 	compositeProfile.GlobalUNSCALEDCOMPONENTOFFSET = 0;
 	compositeProfile.GlobalNON_OVERLAPPING = 1;
@@ -3807,11 +3805,11 @@ wchar_t *CO_Compile(TrueTypeFont * font, TrueTypeGlyph * glyph, wchar_t *StartPt
 	}
 
 success:
-    if (Newbbox.xmin != SHRT_MAX) { // update the bounding box of a composite glyph
-    	glyph->xmin = Newbbox.xmin;
-    	glyph->ymin = Newbbox.ymin;
-    	glyph->xmax = Newbbox.xmax;
-    	glyph->ymax = Newbbox.ymax;
+	if (Newbbox.xmin != SHRT_MAX) { // update the bounding box of a composite glyph
+		glyph->xmin = Newbbox.xmin;
+		glyph->ymin = Newbbox.ymin;
+		glyph->xmax = Newbbox.xmax;
+		glyph->ymax = Newbbox.ymax;
 	}
 	*numCompositeContours = compositeProfile.numberOfCompositeContours;
 	*numCompositePoints	  = compositeProfile.numberOfCompositePoints;
@@ -3831,93 +3829,93 @@ void CO_GetErrorString (short ErrorNb, wchar_t * ErrorString)
 
 	switch (ErrorNb ) {
 		case co_NoError:
-			swprintf( ErrorString, L"There is no Error");
+			swprintf(ErrorString,100, L"There is no Error");
 			break;
 		case tt_EmbeddedComment:
-			swprintf( ErrorString, L"Embedded comment");
+			swprintf(ErrorString,100, L"Embedded comment");
 			break;
 		case tt_UnterminatedComment:
-			swprintf( ErrorString, L"Unterminated comment");
+			swprintf(ErrorString,100, L"Unterminated comment");
 			break;
 		case co_TwoInstructionsInSameLine:
-			swprintf( ErrorString, L"End of line expected");
+			swprintf(ErrorString,100, L"End of line expected");
 			break;
 		case co_BooleanFlagsMissing:
-			swprintf( ErrorString, L"bool flags missing");
+			swprintf(ErrorString,100, L"bool flags missing");
 			break;
 		case co_WrongNumberOfBoolean:
-			swprintf( ErrorString, L"Wrong number of boolean flags");
+			swprintf(ErrorString,100, L"Wrong number of boolean flags");
 			break;
 		case co_TooManyBooleans:
-			swprintf( ErrorString, L"Too many booleans");
+			swprintf(ErrorString,100, L"Too many booleans");
 			break;
 		case co_UnrecognizedBoolean:
-			swprintf( ErrorString, L"Unrecognized boolean flag");
+			swprintf(ErrorString,100, L"Unrecognized boolean flag");
 			break;
 		case co_MissingClosingBracket:
-			swprintf( ErrorString, L"Missing closing bracket");
+			swprintf(ErrorString,100, L"Missing closing bracket");
 			break;
 		case co_EmptyParameterList:
-			swprintf( ErrorString, L"Missing comma between parameters or empty parameter list");
+			swprintf(ErrorString,100, L"Missing comma between parameters or empty parameter list");
 			break;
 		case co_MissingParameters:
-			swprintf( ErrorString, L"Missing parameters");
+			swprintf(ErrorString,100, L"Missing parameters");
 			break;
 		case co_PointNbOutOfRange:
-			swprintf( ErrorString, L"Point number out of range");
+			swprintf(ErrorString,100, L"Point number out of range");
 			break;
 		case co_GlyphIndexOutOfRange:
-			swprintf( ErrorString, L"Glyph index out of range");
+			swprintf(ErrorString,100, L"Glyph index out of range");
 			break;
 		case co_ArgumentOutOfRange:
-			swprintf( ErrorString, L"Argument out of range");
+			swprintf(ErrorString,100, L"Argument out of range");
 			break;
 		case tt_ParseOverflow:
-			swprintf( ErrorString, L"Number too big to be parsed, bigger than MaxShort");
+			swprintf(ErrorString,100, L"Number too big to be parsed, bigger than MaxShort");
 			break;
 		case co_AnchorArgExceedMax:
-			swprintf( ErrorString, L"Anchor argument exceed maximum value");
+			swprintf(ErrorString,100, L"Anchor argument exceed maximum value");
 			break;
 		case co_AnchorNothingAbove:
-			swprintf( ErrorString, L"Composite, no instruction in the line above");
+			swprintf(ErrorString,100, L"Composite, no instruction in the line above");
 			break;
 		case co_2_14Overflow:
-			swprintf( ErrorString, L"Composite, number too big for 2.14 float");
+			swprintf(ErrorString,100, L"Composite, number too big for 2.14 float");
 			break;
 		case co_ComponentSizeOverflow:
-			swprintf( ErrorString, L"Composite, too many components");
+			swprintf(ErrorString,100, L"Composite, too many components");
 			break;
 
 		case co_OverlapLastInstruction:
-			swprintf( ErrorString, L"Composite, OVERLAP cannot be the last composite command");
+			swprintf(ErrorString,100, L"Composite, OVERLAP cannot be the last composite command");
 			break;
 		case co_NonOverlapLastInstruction:
-			swprintf( ErrorString, L"Composite, NONOVERLAP cannot be the last composite command");
+			swprintf(ErrorString,100, L"Composite, NONOVERLAP cannot be the last composite command");
 			break;
 		case co_UseMymetricsLastInstruction:
-			swprintf( ErrorString, L"Composite, USEMYMETRICS cannot be the last composite command");
+			swprintf(ErrorString,100, L"Composite, USEMYMETRICS cannot be the last composite command");
 			break;
 		case co_ScaledComponentOffsetLastInstruction:
-			swprintf( ErrorString, L"Composite, SCALEDCOMPONENTOFFSET cannot be the last composite command");
+			swprintf(ErrorString,100, L"Composite, SCALEDCOMPONENTOFFSET cannot be the last composite command");
 			break;
 		case co_UnscaledComponentOffsetLastInstruction:
-			swprintf( ErrorString, L"Composite, UNSCALEDCOMPONENTOFFSET cannot be the last composite command");
+			swprintf(ErrorString,100, L"Composite, UNSCALEDCOMPONENTOFFSET cannot be the last composite command");
 			break;
 		case co_ScaledComponentOffsetAlreadySet:
-			swprintf( ErrorString, L"Composite, UNSCALEDCOMPONENTOFFSET (Microsoft compatible) cannot be the used when SCALEDCOMPONENTOFFSET (Apple compatible) is alread used. Only one can be used.");
+			swprintf(ErrorString,100, L"Composite, UNSCALEDCOMPONENTOFFSET (Microsoft compatible) cannot be the used when SCALEDCOMPONENTOFFSET (Apple compatible) is alread used. Only one can be used.");
 			break;
 		case co_UnscaledComponentOffsetAlreadySet:
-			swprintf( ErrorString, L"Composite, SCALEDCOMPONENTOFFSET (Apple compatible) cannot be the used when UNSCALEDCOMPONENTOFFSET (Microsoft compatible) is alread used. Only one can be used.");
+			swprintf(ErrorString,100, L"Composite, SCALEDCOMPONENTOFFSET (Apple compatible) cannot be the used when UNSCALEDCOMPONENTOFFSET (Microsoft compatible) is alread used. Only one can be used.");
 			break;
 		case co_ComponentChangeOnVariationFont:
-			swprintf(ErrorString, L"Composite definition has changed or is not present");
+			swprintf(ErrorString,100, L"Composite definition has changed or is not present");
 			break; 
 
 		case co_NotImplemented:
-			swprintf( ErrorString, L"Not implemented");
+			swprintf(ErrorString,100, L"Not implemented");
 			break;
 		default :
-			swprintf( ErrorString, L"Unknown error!");
+			swprintf(ErrorString,100, L"Unknown error!");
 			break;
 	}
 
@@ -3974,7 +3972,7 @@ bool DisassemComponent(TrueTypeGlyph *glyph, TextBuffer *src, wchar_t errMsg[]) 
  		} 
 		
 		if (i > glyph->componentSize) {
-			swprintf(errMsg,L"DisassemComponent: Component data size %hd does not match parsed %hd size", glyph->componentSize,i);
+			swprintf(errMsg,100,L"DisassemComponent: Component data size %hd does not match parsed %hd size", glyph->componentSize,i);
 			return false;
 		}
 
@@ -3985,14 +3983,14 @@ bool DisassemComponent(TrueTypeGlyph *glyph, TextBuffer *src, wchar_t errMsg[]) 
 		c = flags & ROUND_XY_TO_GRID ? L'R' : L'r';
 	 	
 		if (flags & WE_HAVE_A_TWO_BY_TWO) {
-			if (flags & ARGS_ARE_XY_VALUES) swprintf(buf,L"SOFFSET[%c",c); else swprintf(buf,L"SANCHOR[");
-			swprintf(&buf[STRLENW(buf)],L"], %hu, %hd, %hd, %.4f, %.4f, %.4f, %.4f\r",
+			if (flags & ARGS_ARE_XY_VALUES) swprintf(buf,100,L"SOFFSET[%c",c); else swprintf(buf,100,L"SANCHOR[");
+			swprintf(&buf[STRLENW(buf)],100,L"], %hu, %hd, %hd, %.4f, %.4f, %.4f, %.4f\r",
 				glyphIndex,arg1,arg2,
 			 	(double)xscale /16384.0 + 0.000005, (double)scale01/16384.0 + 0.000005, 
 			 	(double)scale10/16384.0 + 0.000005, (double)yscale /16384.0 + 0.000005);	
 		} else {
-	 		if (flags & ARGS_ARE_XY_VALUES) swprintf(buf,L"OFFSET[%c",c); else swprintf(buf,L"ANCHOR[");
-			swprintf(&buf[STRLENW(buf)],L"], %hu, %hd, %hd\r",glyphIndex,arg1,arg2);	
+	 		if (flags & ARGS_ARE_XY_VALUES) swprintf(buf,100,L"OFFSET[%c",c); else swprintf(buf,100,L"ANCHOR[");
+			swprintf(&buf[STRLENW(buf)],100,L"], %hu, %hd, %hd\r",glyphIndex,arg1,arg2);
 		}
 		src->Append(buf);
 	} while (flags & MORE_COMPONENTS);

@@ -60,7 +60,7 @@ public:
 		float firstSgn = 0; 
 		for (const auto & value : first.peakFloat)
 		{
-			firstSum += std::abs(value); 
+			firstSum += fabs(value);
 			firstSgn += sgn(value); 
 		}
 
@@ -68,7 +68,7 @@ public:
 		float secondSgn = 0; 
 		for (const auto & value : second.peakFloat)
 		{
-			secondSum += std::abs(value); 
+			secondSum += fabs(value); 
 			secondSgn += sgn(value); 
 		}
 

@@ -14,7 +14,7 @@
 #include <vector>
 #include <climits>
 #include <codecvt>
-
+#include <locale>
 #include "TextBuffer.h"
 
 #ifndef	Min
@@ -231,7 +231,7 @@ void TextBuffer::AppendLine(const wchar_t strg[]) {
 	
 	indent = chars > 0 ? this->indent : 0;
 	
-	swprintf(eol,L"\r");
+	swprintf(eol,1, L"\r");
 	charsEol = wcslen(eol);
 
 	if (!this->AssertTextSize(indent + chars + charsEol + 1)) return;

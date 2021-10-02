@@ -3,6 +3,8 @@
 
 #pragma once
 
+#define _Inout_
+
 class Fixed2_14
 {
 public:

@@ -20,6 +20,7 @@
 #include <climits>
 #include <codecvt>
 #include <span>
+#include <wchar.h>
 
 #include "Area.h"
 #include "opentypedefs.h"
